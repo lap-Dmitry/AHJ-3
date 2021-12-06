@@ -5,6 +5,9 @@ export default class GamePlay {
     this.char = char;
     this.activeChar = null;
     this.boardListeners = [];
+    this.dead = null;
+    this.miss = null;
+    this.count = null;
   }
 
   init() {
@@ -56,19 +59,28 @@ export default class GamePlay {
       this.resetScore();
       alert('Вы проиграли');
     }
-
+    this.count = 0;
     this.changeCursor();
   }
 
   generateposition() {
     const position = Math.floor(Math.random() * this.boardSize ** 2);
-    if (position === this.position) {
+    if (this.position === position) {
       this.generateposition();
       return;
     }
     this.deletedChar();
     this.position = position;
     this.adventChar();
+  }
+
+  gameOver() {
+    this.miss = document.querySelector('.miss');
+    setTimeout(() => {
+      if (!this.position) {
+        this.miss.textContent++;
+      }
+    }, 1000);
   }
 
   deletedChar() {
@@ -96,6 +108,16 @@ export default class GamePlay {
   start() {
     setInterval(() => {
       this.generateposition();
+      this.miss.textContent = +this.miss.textContent + this.count;
+
+      if (this.count !== 1) {
+        setTimeout(this.count = 1, 1000);
+      }
+      if (this.miss.textContent >= 5) {
+        alert('Попробуйте ещё раз!');
+        this.resetScore();
+      }
     }, 1000);
+    this.gameOver();
   }
 }
